@@ -1,26 +1,38 @@
-const botgram = require("botgram")
-const bot = botgram("")
+const TelegramBot = require('node-telegram-bot-api');
+const config = require('config');
+const token = config.get('telegram.api');
+const bot = new TelegramBot(token, {polling: true});
 
-bot.command("start", "help", (msg, reply) =>
-  reply.text("To schedule an alert, do: /alert <seconds> <text>"))
+var commander = require('./routes/controllers/command.js');
 
-bot.command("alert", (msg, reply, next) => {
-  var [ seconds, text ] = msg.args(2)
-  if (!seconds.match(/^\d+$/) || !text) return next()
+bot.onText(/\/start/, (msg, match) => {
+  bot.sendMessage(msg.chat.id, 'start guide');
+});
 
-  setTimeout(() => reply.text(text), Number(seconds) * 1000)
-})
+bot.onText(/\/help/ , (msg, match) => {
+  bot.sendMessage(msg.chat.id, 'help guide');
+});
 
+// Matches "/echo [whatever]"
+bot.onText(/\/echo (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+  const resp = match[1]; // the captured "whatever"
 
-bot.command("lyse", (msg, reply) => {
-  if (msg.text.toString().toLowerCase().includes('task') || msg.text.toString().toLowerCase().includes('todo')) {
-    console.log("Get user's username: " + msg.from.username); //works for individual
-    console.log("Get chat type: " + msg.chat.type);
-    //msg.from.first_name -- display name of user
-    //if group need to get confirmation if want to display task to group
-    //retrieve information
+  bot.sendMessage(chatId, resp);
+});
+
+// Listen for any kind of message. There are different kinds of
+// messages.
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  // calling bot
+  if (msg.text.toLowerCase().includes('lyse')) {
+
+    if (msg.text.toLowerCase().includes('task') ||
+          msg.text.toLowerCase().includes('todo')){
+      console.log(commander.task(msg));
+    }
+
+    bot.sendMessage(chatId, 'Yes Boss?');
   }
-})
-
-bot.command((msg, reply) =>
-  reply.text("Invalid command."))
+});
