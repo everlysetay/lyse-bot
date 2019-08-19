@@ -9,12 +9,12 @@ var conn = mysql.createConnection({
 });
 
 
-conn.connect(function(err) {
+conn.connect(function (err) {
   if (err) {
-    console.log('Error connecting to Db');
+    console.error('Error connecting to Db');
     return;
   }
   console.log("Connected!");
 });
 
-
+module.exports = conn;

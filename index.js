@@ -26,13 +26,14 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   // calling bot
+
   if (msg.text.toLowerCase().includes('lyse')) {
 
     if (msg.text.toLowerCase().includes('task') ||
           msg.text.toLowerCase().includes('todo')){
-      console.log(commander.task(msg));
+      bot.sendMessage(chatId, commander.task(msg));
+    } else {
+      bot.sendMessage(chatId, 'Yes Boss?');
     }
-
-    bot.sendMessage(chatId, 'Yes Boss?');
   }
 });
